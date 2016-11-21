@@ -433,11 +433,10 @@ class OutputHandler(object):
             OutputHandler.print_lock.release()
 
         if self.compress_results:
-            self.log_zip.write(run.log_file, os.path.relpath(run.log_file, os.path.join(self.benchmark.log_folder, os.pardir)))
+            self.log_zip.write(run.log_file, os.path.relpath(run.log_file, os.path.join(self.benchmark.log_folder, os.pardir))) 
             os.remove(run.log_file)
         else:
             self.all_created_files.add(run.log_file)
-
 
     def output_after_run_set(self, runSet, cputime=None, walltime=None, energy={}):
         """

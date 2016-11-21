@@ -61,6 +61,8 @@ class BenchExec(object):
         parser = self.create_argument_parser()
         self.config = parser.parse_args(argv[1:])
 
+        print(self.config.compress_results)
+
         for arg in self.config.files:
             if not os.path.exists(arg) or not os.path.isfile(arg):
                 parser.error("File {0} does not exist.".format(repr(arg)))
@@ -72,16 +74,23 @@ class BenchExec(object):
 
         self.executor = self.load_executor()
 
+        print("This is Test! may be start?")
+
         returnCode = 0
         for arg in self.config.files:
+            print("This is Test! may be loop start?")
             if self.stopped_by_interrupt:
                 break
             logging.debug("Benchmark %r is started.", arg)
             rc = self.execute_benchmark(arg)
             returnCode = returnCode or rc
             logging.debug("Benchmark %r is done.", arg)
+            print("This is Test! may be loop end?")
 
         logging.debug("I think my job is done. Have a nice day!")
+
+        print("This is Test! may be end?")
+
         return returnCode
 
 

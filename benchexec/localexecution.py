@@ -37,6 +37,7 @@ from benchexec.runexecutor import RunExecutor
 from benchexec import systeminfo
 from benchexec import util
 
+from benchexec.othermetricswriter import Othermetricswriter
 
 WORKER_THREADS = []
 STOPPED_BY_INTERRUPT = False
@@ -122,16 +123,25 @@ def execute_benchmark(benchmark, output_handler):
     # iterate over run sets
     for runSet in benchmark.run_sets:
 
+        print("This is the Test! each run set start")
+
+        other_writer = Othermetricswriter(runSet)
+
+        other_writer.other_before_runset()
+
         if STOPPED_BY_INTERRUPT:
             break
 
         if not runSet.should_be_executed():
+            print("This is the Test! runSet 1")
             output_handler.output_for_skipping_run_set(runSet)
 
         elif not runSet.runs:
+            print("This is the Test! runSet 2")
             output_handler.output_for_skipping_run_set(runSet, "because it has no files")
 
         else:
+            print("This is the Test! runSet 3")
             run_sets_executed += 1
             # get times before runSet
             ruBefore = resource.getrusage(resource.RUSAGE_CHILDREN)
@@ -139,6 +149,8 @@ def execute_benchmark(benchmark, output_handler):
             energyBefore = util.measure_energy()
 
             output_handler.output_before_run_set(runSet)
+
+            print("This is the Test! number of runs: ",len(runSet.runs))
 
             # put all runs into a queue
             for run in runSet.runs:
@@ -149,7 +161,7 @@ def execute_benchmark(benchmark, output_handler):
                 cores = coreAssignment[i] if coreAssignment else None
                 memBanks = memoryAssignment[i] if memoryAssignment else None
                 user = benchmark.config.users[i] if benchmark.config.users else None
-                WORKER_THREADS.append(_Worker(benchmark, cores, memBanks, user, output_handler))
+                WORKER_THREADS.append(_Worker(benchmark, cores, memBanks, user, output_handler, other_writer))
 
             # wait until all tasks are done,
             # instead of queue.join(), we use a loop and sleep(1) to handle KeyboardInterrupt
@@ -180,6 +192,8 @@ def execute_benchmark(benchmark, output_handler):
 
             for worker in WORKER_THREADS:
                 worker.cleanup()
+
+        print("This is the Test! each run set end")
 
     if throttle_check.has_throttled():
         logging.warning('CPU throttled itself during benchmarking due to overheating. '
@@ -213,7 +227,7 @@ class _Worker(threading.Thread):
     """
     working_queue = Queue()
 
-    def __init__(self, benchmark, my_cpus, my_memory_nodes, my_user, output_handler):
+    def __init__(self, benchmark, my_cpus, my_memory_nodes, my_user, output_handler, other_writer):
         threading.Thread.__init__(self) # constuctor of superclass
         self.benchmark = benchmark
         self.my_cpus = my_cpus
@@ -221,6 +235,7 @@ class _Worker(threading.Thread):
         self.output_handler = output_handler
         self.run_executor = RunExecutor(user=my_user, **benchmark.config.containerargs)
         self.setDaemon(True)
+        self.other_writer = other_writer
 
         self.start()
 
@@ -283,7 +298,11 @@ class _Worker(threading.Thread):
             run_result['memoryNodes'] = self.my_memory_nodes
 
         run.set_result(run_result)
+
         self.output_handler.output_after_run(run)
+
+        # this is the point to store the information of run statistics
+        self.other_writer.other_after_run(run)
 
 
     def stop(self):

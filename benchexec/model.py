@@ -653,7 +653,6 @@ class Run(object):
                                self.propertyfile,
                                self.runSet.benchmark.rlimits)
 
-
     def set_result(self, values, visible_columns={}):
         """Set the result of this run.
         Use this method instead of manually setting the run attributes and calling after_execution(),
