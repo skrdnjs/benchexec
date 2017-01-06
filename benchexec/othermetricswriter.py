@@ -8,7 +8,7 @@ class Othermetricswriter(object):
     def __init__(self, runSet):
 
         self.runSet = runSet
-        self.fieldnames = ["FileName","NoR","RLen","RLeninBlkAvg","AFC","SFC","ComS","TfR","TTfCPA","TfFC","TfTran","TfSMTwoitp"]
+        self.fieldnames = ["FileName","NoR","RLen","RLeninBlkAvg","AFC","SFC","ComS","TfR","TTfCPA","TfFC","TfTran","TfSMTwoitp","NoAbs"]
         self.filename = runSet.log_folder+"csv"
 
     def other_before_runset(self):
@@ -85,6 +85,10 @@ class Othermetricswriter(object):
                 tokens = line.split()
                 rtoken = tokens[7]
                 dic["TfSMTwoitp"] = rtoken[0:len(rtoken)-1]
+
+            if line.find("Number of abstractions:") >= 0:
+                tokens = line.split()
+                dic["NoAbs"] = tokens[3]
 
         for field in self.fieldnames:
             if dic.get(field) is None:
