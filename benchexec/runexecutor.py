@@ -378,6 +378,7 @@ class RunExecutor(containerexecutor.ContainerExecutor):
         result = _SUDO_ARGS + [self._user]
         for var, value in env.items():
             result.append(var + '=' + value)
+
         return result + ['--'] + args
 
     def _kill_process(self, pid, cgroups=None, sig=signal.SIGKILL):
@@ -450,7 +451,6 @@ class RunExecutor(containerexecutor.ContainerExecutor):
                          Please add the process of the following execution to all those cgroups!
         """
         logging.debug("Setting up cgroups for run.")
-
         # Setup cgroups, need a single call to create_cgroup() for all subsystems
         subsystems = [CPUACCT, FREEZER, MEMORY] + self._cgroup_subsystems
         if my_cpus is not None:
