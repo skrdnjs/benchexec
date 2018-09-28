@@ -27,9 +27,14 @@ class Tool(benchexec.tools.template.BaseTool):
     """
     
     REQUIRED_PATHS = [
-        "consequence.pl"
-    ]
-    
+                      "bin",
+                      "check.sh",
+                      "consequence.pl",
+                      "deps",
+                      "jars",
+                      "setup_consequence.pl",
+                      ]
+
     def executable(self):
         return util.find_executable('consequence.pl')
     
@@ -37,14 +42,12 @@ class Tool(benchexec.tools.template.BaseTool):
         return 'ConSequence'
     
     def determine_result(self, returncode, returnsignal, output, isTimeout):
-        lines = " ".join(output[-10:])
-        if isTimeout:
-            return 'TIMEOUT'
-        if "success" in lines:
-            return result.RESULT_TRUE_PROP
-        elif "failed" in lines:
+        lines = " ".join(output)
+        if "consequence_unsafe" in lines:
             return result.RESULT_FALSE_REACH
-        elif "unknown" in lines:
+        elif "consequence_safe" in lines:
+            return result.RESULT_TRUE_PROP
+        elif "consequence_unknown" in lines:
             return result.RESULT_UNKNOWN
         else:
             return result.RESULT_ERROR

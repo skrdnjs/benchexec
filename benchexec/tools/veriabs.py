@@ -17,6 +17,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import os
+
 import benchexec.util as util
 import benchexec.tools.template
 import benchexec.result as result
@@ -26,32 +28,40 @@ class Tool(benchexec.tools.template.BaseTool):
     VeriAbs
     """
 
+    REQUIRED_PATHS = [
+                      "bin",
+                      "cpact",
+                      "jars",
+                      "exp-in",
+                      "prism",
+                      "lib",
+                      "afl-2.35b",
+                      "scripts",
+                      "supportFiles",
+                      ]
+
     def executable(self):
-        return util.find_executable('veriabs')
-    
+        return util.find_executable('scripts/veriabs')
+
+    def program_files(self, executable):
+        installDir = os.path.join(os.path.dirname(executable), os.path.pardir)
+        return util.flatten(util.expand_filename_pattern(path, installDir) for path in self.REQUIRED_PATHS)
+
     def name(self):
         return 'VeriAbs'
-    
+
     def cmdline(self, executable, options, tasks, propertyfile, rlimits):
         if propertyfile:
-            options += ['--property-file', propertyfile]
+            options = options + ['--property-file', propertyfile]
         return [executable] + options + tasks
-    
+
     def determine_result(self, returncode, returnsignal, output, isTimeout):
-        lines = " ".join(output[-10:])
-        if isTimeout:
-            return 'TIMEOUT'
-        if "INVALID-POINTER" in lines or "DYNAMIC_OBJECT" in lines or "dereference failure" in lines:
-            return result.RESULT_FALSE_DEREF
-        elif "SUCCESS" in lines:
+        lines = " ".join(output)
+        if "VERIABS_VERIFICATION_SUCCESSFUL" in lines:
             return result.RESULT_TRUE_PROP
-        elif "FAILED" in lines:
+        elif "VERIABS_VERIFICATION_FAILED" in lines:
             return result.RESULT_FALSE_REACH
-        elif "OUTOFMEMORY" in lines:
-            return 'OUT OF MEMORY'
-        elif "TIMEOUT" in lines:
-            return "TIMEOUT"
-        elif "NOT SUPPORTED" in lines or "UNKNOWN" in lines:
+        elif "NOT SUPPORTED" in lines or "VERIABS_UNKNOWN" in lines:
             return result.RESULT_UNKNOWN
         else:
             return result.RESULT_ERROR

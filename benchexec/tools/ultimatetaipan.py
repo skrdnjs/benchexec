@@ -22,7 +22,7 @@ from . import ultimate
 
 class Tool(ultimate.UltimateTool):
 
-    REQUIRED_PATHS = [
+    REQUIRED_PATHS_SVCOMP17 = [
                   "artifacts.xml",
                   "configuration",
                   "cvc4",
@@ -33,21 +33,24 @@ class Tool(ultimate.UltimateTool):
                   "p2",
                   "plugins",
                   "README",
-                  "svcomp-Deref-32bit-Taipan_Bitvector.epf",
-                  "svcomp-Deref-32bit-Taipan_Default.epf",
                   "svcomp-DerefFreeMemtrack-32bit-Taipan_Bitvector.epf",
                   "svcomp-DerefFreeMemtrack-32bit-Taipan_Default.epf",
+                  "svcomp-DerefFreeMemtrack-64bit-Taipan_Bitvector.epf",
+                  "svcomp-DerefFreeMemtrack-64bit-Taipan_Default.epf",
                   "svcomp-Overflow-32bit-Taipan_Default.epf",
                   "svcomp-Overflow-64bit-Taipan_Default.epf",
                   "svcomp-Reach-32bit-Taipan_Bitvector.epf",
                   "svcomp-Reach-32bit-Taipan_Default.epf",
                   "svcomp-Reach-64bit-Taipan_Bitvector.epf",
                   "svcomp-Reach-64bit-Taipan_Default.epf",
-                  "Taipan.xml",
+                  "TaipanMemDerefMemtrack.xml",
+                  "TaipanReach.xml",
+                  "TaipanWitnessValidation.xml",
                   "Ultimate",
                   "Ultimate.ini",
                   "Ultimate.py",
-                  "z3"
+                  "z3",
+                  "mathsat"
                   ]
 
     def name(self):

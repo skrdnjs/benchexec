@@ -18,10 +18,13 @@ import benchexec.result as result
 class Tool(benchexec.tools.template.BaseTool):
 
     REQUIRED_PATHS = [
-                  "bin/*",
-                  "lib/*",
+                  "bin",
+                  "lib",
+                  "include",
+                  "logback-test.xml",
                   "skink.sh",
-                  "skink.jar"
+                  "skink.jar",
+                  "application.conf"
                   ]
 
     def executable(self):

@@ -28,7 +28,8 @@ class Tool(benchexec.tools.template.BaseTool):
     SymDIVINE info object
     """
 
-    BINS = ['symdivine', 'run_symdivine.py', 'compile_to_bitcode.py', 'lart']
+    BINS = ['symdivine', 'run_symdivine.py', 'compile_to_bitcode.py', 'lart',
+        'witness-true-template.xml', 'witness-false-template.xml']
 
     def executable(self):
         """
@@ -46,7 +47,7 @@ class Tool(benchexec.tools.template.BaseTool):
         return 'SymDIVINE'
 
     def version(self, executable):
-         """
+        """
         Return the name of the tool, formatted for humans.
         """
         return self._version_from_tool(executable)
